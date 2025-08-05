@@ -731,6 +731,7 @@ MonoBehaviour:
   voice: 3
   actorChatImage: {fileID: 21300000, guid: 636ccd06334eb9c44b56b3846cdc8631, type: 3}
   text: {fileID: 494952653}
+  instructions: speak as if asking a question
   actorImage: {fileID: 871273607}
 --- !u!82 &871273610
 AudioSource:
@@ -1411,10 +1412,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98522c865ecf6d9418c6ba2286d2c271, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  model: 0
+  model: 2
   voice: 5
   actorChatImage: {fileID: 21300000, guid: 79957e740b8a568409b4382cc7db4285, type: 3}
   text: {fileID: 888497599}
+  instructions: speak cheerful in a positive tone
   actorImage: {fileID: 1925632942}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

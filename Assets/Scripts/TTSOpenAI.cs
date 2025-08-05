@@ -17,11 +17,11 @@ public class TTSOpenAI
         return new OpenAIClient(Resources.Load<OpenAIConfiguration>("OpenAIConfiguration"));
     }
 
-    public static async Task<AudioClip> Execute(string text, string model, string voice)
+    public static async Task<AudioClip> Execute(string text, string model, string voice, string instructions = "")
     {
         try
         {
-            SpeechRequest request = new(text, model, voice);
+            SpeechRequest request = new(text, model, voice, instructions);
             AudioClip speechClip = await GetOpenAIClient().AudioEndpoint.GetSpeechAsync(request);
             return speechClip;
         }

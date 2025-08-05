@@ -9,10 +9,13 @@ A Unity XR sample project demonstrating AI text-to-speech functionality using Op
 - OpenAI Text-to-Speech integration
 - Multiple TTS models support (tts-1, tts-1-hd, gpt-4o-mini-tts)
 - Various voice options (alloy, echo, fable, onyx, nova, shimmer)
+- Additional instructions for aspects of speech (accent, intonation, tone)
 
 ## OpenAI SDK
 
-This project uses an [independently developed OpenAI SDK for Unity](https://github.com/RageAgainstThePixel/com.openai.unity).
+This project uses an independently developed OpenAI SDK for Unity: https://github.com/RageAgainstThePixel/com.openai.unity.
+
+Find a description of the models via OpenAI: https://platform.openai.com/docs/guides/text-to-speech#text-to-speech-models.
 
 ## Setup
 
@@ -28,8 +31,9 @@ This project uses an [independently developed OpenAI SDK for Unity](https://gith
 
 1. The `TTSBehaviour` orchestrates the text-to-speech and a little animation
 2. `TTSOpenAI` is a reusable component integrated with Unity
-2. Select different models and voices to try them out
-3. Modify the text boxes for a different conversation
+3. Select different models and voices to try them out
+4. Modify the text boxes for a different conversation
+5. Edit the instructions
 
 ## Core Integration
 
@@ -47,11 +51,11 @@ public class TTSOpenAI
         return new OpenAIClient(Resources.Load<OpenAIConfiguration>("OpenAIConfiguration"));
     }
 
-    public static async Task<AudioClip> Execute(string text, string model, string voice)
+    public static async Task<AudioClip> Execute(string text, string model, string voice, string instructions = "")
     {
         try
         {
-            SpeechRequest request = new(text, model, voice);
+            SpeechRequest request = new(text, model, voice, instructions);
             AudioClip speechClip = await GetOpenAIClient().AudioEndpoint.GetSpeechAsync(request);
             return speechClip;
         }

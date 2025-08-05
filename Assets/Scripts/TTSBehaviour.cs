@@ -29,6 +29,7 @@ public class TTSBehaviour : MonoBehaviour
     [SerializeField] private Voice voice = Voice.alloy;
     [SerializeField] private Sprite actorChatImage;
     [SerializeField] private Text text;
+    [SerializeField] private string instructions;
     [SerializeField] private Image actorImage;
 
     public void Speak()
@@ -38,7 +39,7 @@ public class TTSBehaviour : MonoBehaviour
 
     private IEnumerator SpeakCoroutine(string text, Model model, Voice voice)
     {
-        var task = TTSOpenAI.Execute(text, model.GetDescription(), voice.ToString());
+        var task = TTSOpenAI.Execute(text, model.GetDescription(), voice.ToString(), instructions);
 
         yield return new WaitUntil(() => task.IsCompleted);
         
