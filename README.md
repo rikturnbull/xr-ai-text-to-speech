@@ -21,8 +21,8 @@ Find a description of the models via OpenAI: https://platform.openai.com/docs/gu
 
 1. Clone or download this project
 2. Open the project in Unity
-3. Navigate to `Resources/OpenAIConfiguration`
-4. Set your OpenAI API Key in the configuration file
+3. Open `Resources/OpenAIConfiguration` in the inspector
+4. Configure your OpenAI Api Key
 5. Play the scene and click on a character to hear them speak!
 
 ⚠️ **Important**: Do not commit the `OpenAIConfiguration` file to version control as it contains your API key. Add it to your `.gitignore` file.
