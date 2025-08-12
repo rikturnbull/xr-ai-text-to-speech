@@ -70,6 +70,8 @@ public class TTSOpenAI
 ```
 public class TTSBehaviour : MonoBehaviour
 {
+    ...
+    
     public void Speak()
     {
         StartCoroutine(TTSOpenAI.ExecuteCoroutine(text.text, model.GetDescription(), voice.ToString(), instructions, audioClip =>
