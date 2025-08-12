@@ -20,7 +20,7 @@ Find a description of the models via OpenAI: https://platform.openai.com/docs/gu
 ## Setup
 
 1. Clone or download this project
-2. Open the project in Unity
+2. Open the project in Unity (tested with v6000.0.55f1)
 3. Open `Resources/OpenAIConfiguration` in the inspector
 4. Configure your OpenAI Api Key
 5. Play the scene and click on a character to hear them speak!
@@ -37,33 +37,47 @@ Find a description of the models via OpenAI: https://platform.openai.com/docs/gu
 
 ## Core Integration
 
+### OpenAI SpeechRequest
 ```
 public class TTSOpenAI
 {
-    private static OpenAIClient _openAIClient;
+    ...
 
-    private static OpenAIClient GetOpenAIClient()
+    public static IEnumerator ExecuteCoroutine(string text, string model, string voice, string instructions, Action<AudioClip> onComplete)
     {
-        if (_openAIClient != null)
-        {
-            return _openAIClient;
-        }
-        return new OpenAIClient(Resources.Load<OpenAIConfiguration>("OpenAIConfiguration"));
-    }
+        AudioClip result = null;
 
-    public static async Task<AudioClip> Execute(string text, string model, string voice, string instructions = "")
-    {
-        try
+        SpeechRequest request = new(text, model, voice, instructions);
+        Task<SpeechClip> speechClip = GetOpenAIClient().AudioEndpoint.GetSpeechAsync(request);
+
+        while (!speechClip.IsCompleted) yield return null;
+
+        if (speechClip.Exception != null)
         {
-            SpeechRequest request = new(text, model, voice, instructions);
-            AudioClip speechClip = await GetOpenAIClient().AudioEndpoint.GetSpeechAsync(request);
-            return speechClip;
+            Debug.LogError($"Error in TTSOpenAI.ExecuteCoroutine: {speechClip.Exception.Message}");
         }
-        catch (Exception ex)
+        else
         {
-            Debug.LogError($"Error in TTSOpenAI.Execute: {ex.Message}");
-            return null;
+            result = speechClip.Result.AudioClip;
         }
+
+        onComplete?.Invoke(result);
     }
 }
 ```
+
+### Example Usage
+```
+public class TTSBehaviour : MonoBehaviour
+{
+    public void Speak()
+    {
+        StartCoroutine(TTSOpenAI.ExecuteCoroutine(text.text, model.GetDescription(), voice.ToString(), instructions, audioClip =>
+        {
+            if (audioClip != null)
+            {
+                audioSource.PlayOneShot(audioClip);
+            }
+        }));
+    }
+}

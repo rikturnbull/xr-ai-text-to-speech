@@ -32,34 +32,27 @@ public class TTSBehaviour : MonoBehaviour
     [SerializeField] private string instructions;
     [SerializeField] private Image actorImage;
 
-    public void Speak()
+    private AudioSource audioSource;
+
+    private void Start()
     {
-        StartCoroutine(SpeakCoroutine(text.text, model, voice));
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            Debug.LogError("AudioSource component not found on this GameObject.");
+        }
     }
 
-    private IEnumerator SpeakCoroutine(string text, Model model, Voice voice)
+    public void Speak()
     {
-        var task = TTSOpenAI.Execute(text, model.GetDescription(), voice.ToString(), instructions);
-
-        yield return new WaitUntil(() => task.IsCompleted);
-        
-        AudioClip audioClip = task.Result;
-        if (audioClip != null)
+        StartCoroutine(TTSOpenAI.ExecuteCoroutine(text.text, model.GetDescription(), voice.ToString(), instructions, audioClip =>
         {
-            AudioSource audioSource = GetComponent<AudioSource>();
-            if (audioSource != null)
+            if (audioClip != null)
             {
-                Sprite originalSprite = actorImage.sprite;
-                
+                StartCoroutine(AnimateActorImage(audioClip.length, actorImage.sprite));
                 audioSource.PlayOneShot(audioClip);
-                
-                StartCoroutine(AnimateActorImage(audioClip.length, originalSprite));
             }
-            else
-            {
-                Debug.LogError("AudioSource component not found on this GameObject.");
-            }
-        }
+        }));
     }
 
     private IEnumerator AnimateActorImage(float duration, Sprite originalSprite)

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using System.Collections;
 using OpenAI;
 using OpenAI.Audio;
 using System;
@@ -17,18 +18,24 @@ public class TTSOpenAI
         return new OpenAIClient(Resources.Load<OpenAIConfiguration>("OpenAIConfiguration"));
     }
 
-    public static async Task<AudioClip> Execute(string text, string model, string voice, string instructions = "")
+    public static IEnumerator ExecuteCoroutine(string text, string model, string voice, string instructions, Action<AudioClip> onComplete)
     {
-        try
+        AudioClip result = null;
+
+        SpeechRequest request = new(text, model, voice, instructions);
+        Task<SpeechClip> speechClip = GetOpenAIClient().AudioEndpoint.GetSpeechAsync(request);
+
+        while (!speechClip.IsCompleted) yield return null;
+
+        if (speechClip.Exception != null)
         {
-            SpeechRequest request = new(text, model, voice, instructions);
-            AudioClip speechClip = await GetOpenAIClient().AudioEndpoint.GetSpeechAsync(request);
-            return speechClip;
+            Debug.LogError($"Error in TTSOpenAI.ExecuteCoroutine: {speechClip.Exception.Message}");
         }
-        catch (Exception ex)
+        else
         {
-            Debug.LogError($"Error in TTSOpenAI.Execute: {ex.Message}");
-            return null;
+            result = speechClip.Result.AudioClip;
         }
+
+        onComplete?.Invoke(result);
     }
 }
